@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Menu - Practice Coffee</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="logo">Practice Menu</div>
+      <div class="nav-links"><a href="/">Kembali</a></div>
+    </nav>
+
+    <div class="container" style="text-align: center; margin-top: 50px">
+      <div id="keySection">
+        <h2>🔒 Akses Menu Eksklusif</h2>
+        <p>Masukkan API Key Anda untuk melihat menu.</p>
+        <input
+          type="text"
+          id="apiKeyInput"
+          placeholder="Contoh: PC-MEMBER-XXXX"
+          style="width: 50%"
+        />
+        <br />
+        <button onclick="checkKey()" class="btn-main">Buka Menu</button>
+        <p style="margin-top: 20px">
+          Belum punya akses?
+          <a href="#" onclick="openModal()" style="color: var(--accent)"
+            >Daftar Member Gratis</a
+          >
+        </p>
+      </div>
+
+      <div id="menuSection" style="display: none">
+        <h2>Menu Hari Ini</h2>
+        <p>Halo, <span id="memberName" style="font-weight: bold"></span>!</p>
+        <div class="grid" id="menuGrid"></div>
+      </div>
+    </div>
+
+    <div id="regModal" class="modal">
+      <div class="modal-content">
+        <h3>Daftar Member</h3>
+        <input type="text" id="regName" placeholder="Nama Lengkap" />
+        <input type="email" id="regEmail" placeholder="Email" />
+        <button onclick="register()" class="btn-main">Dapatkan API Key</button>
+        <button
+          onclick="closeModal()"
+          style="
+            background: none;
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+          "
+        >
+          Batal
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // --- LOGIKA UTAMA ---
+      async function checkKey() {
+        const key = document.getElementById("apiKeyInput").value;
+
+        try {
+          const res = await fetch(`/api/products?apikey=${key}`);
+          const data = await res.json();
+
+          if (data.success) {
+            // Sembunyikan Input Key, Tampilkan Menu
+            document.getElementById("keySection").style.display = "none";
+            document.getElementById("menuSection").style.display = "block";
+            document.getElementById("memberName").innerText = data.user;
+
+            // Render Menu ke dalam Grid
+            const grid = document.getElementById("menuGrid");
+            grid.innerHTML = "";
+
+            data.data.forEach((item) => {
+              // Logika Cek Gambar: Pakai gambar upload atau gambar default
+              const imgUrl = item.image_url
+                ? `/uploads/${item.image_url}`
+                : "https://via.placeholder.com/300x200?text=No+Image";
+
+              grid.innerHTML += `
+                    <div class="card" style="overflow: hidden; padding: 0; text-align: left;">
+                        <img src="${imgUrl}" style="width: 100%; height: 200px; object-fit: cover;">
+                        
+                        <div style="padding: 15px;">
+                            <h3 style="margin: 0 0 10px 0;">${item.name}</h3>
+                            <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px; min-height: 40px;">
+                                ${item.description || "Tidak ada deskripsi."}
+                            </p>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h4 style="color: var(--accent); margin: 0; font-size: 1.1rem;">Rp ${
+                                  item.price
+                                }</h4>
+                                <span style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase;">
+                                    ${item.category || "Menu"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+          } else {
+            alert(data.error || "API Key Salah");
+          }
+        } catch (err) {
+          alert("Gagal mengambil data menu.");
+        }
+      }
+
+      // --- LOGIKA REGISTRASI ---
+      async function register() {
+        const name = document.getElementById("regName").value;
+        const email = document.getElementById("regEmail").value;
+
+        try {
+          const res = await fetch("/api/register-member", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            alert(
+              `Registrasi Berhasil! API Key Anda: ${data.apiKey}\n(Silakan Copy Key ini)`
+            );
+            document.getElementById("apiKeyInput").value = data.apiKey;
+            closeModal();
+          } else {
+            alert("Gagal registrasi");
+          }
+        } catch (err) {
+          alert("Error server saat registrasi.");
+        }
+      }
+
+      function openModal() {
+        document.getElementById("regModal").style.display = "flex";
+      }
+      function closeModal() {
+        document.getElementById("regModal").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

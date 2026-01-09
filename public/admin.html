@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Admin Dashboard</h1>
+
+      <div
+        id="loginForm"
+        style="max-width: 400px; margin: auto; text-align: center"
+      >
+        <div class="card">
+          <h3>Login Admin</h3>
+          <input type="email" id="admEmail" placeholder="Email Admin" />
+          <input type="password" id="admPass" placeholder="Password" />
+          <button onclick="adminLogin()" class="btn-main">Masuk</button>
+        </div>
+      </div>
+
+      <div id="dashboard" style="display: none">
+        <div class="grid">
+          <div class="card">
+            <h3>☕ Tambah Menu Baru</h3>
+            <input type="text" id="prodName" placeholder="Nama Menu" />
+            <input type="text" id="prodDesc" placeholder="Deskripsi Singkat" />
+            <input type="number" id="prodPrice" placeholder="Harga (Rp)" />
+
+            <label style="font-size: 0.9rem; font-weight: bold"
+              >Kategori:</label
+            >
+            <select id="prodCat">
+              <option value="coffee">Coffee</option>
+              <option value="non-coffee">Non-Coffee</option>
+              <option value="snack">Snack</option>
+            </select>
+
+            <label style="font-size: 0.9rem; font-weight: bold"
+              >Foto Menu:</label
+            >
+            <input type="file" id="prodImg" accept="image/*" />
+
+            <button onclick="addProd()" class="btn-main" style="width: 100%">
+              Upload & Simpan
+            </button>
+          </div>
+
+          <div class="card">
+            <h3>👥 Member Terdaftar</h3>
+            <ul
+              id="memberList"
+              style="text-align: left; padding-left: 20px"
+            ></ul>
+            <button
+              onclick="loadMembers()"
+              style="
+                margin-top: 10px;
+                background: #ddd;
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+              "
+            >
+              Refresh List
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Login Logic
+      async function adminLogin() {
+        const email = document.getElementById("admEmail").value;
+        const password = document.getElementById("admPass").value;
+
+        try {
+          const res = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+            loadMembers();
+          } else {
+            alert("Login Gagal! Cek email/password.");
+          }
+        } catch (e) {
+          alert("Error koneksi");
+        }
+      }
+
+      // Add Product Logic (Pakai FormData untuk File)
+      async function addProd() {
+        const name = document.getElementById("prodName").value;
+        const price = document.getElementById("prodPrice").value;
+        const fileInput = document.getElementById("prodImg");
+
+        if (!name || !price) return alert("Nama dan Harga wajib diisi!");
+
+        // Buat FormData object
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append(
+          "description",
+          document.getElementById("prodDesc").value
+        );
+        formData.append("price", price);
+        formData.append("category", document.getElementById("prodCat").value);
+
+        // Masukkan file jika ada
+        if (fileInput.files[0]) {
+          formData.append("image", fileInput.files[0]);
+        }
+
+        try {
+          const res = await fetch("/api/admin/products", {
+            method: "POST",
+            body: formData, // JANGAN set Content-Type header manual
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            alert("Menu Berhasil Ditambahkan!");
+            // Reset Form
+            document.getElementById("prodName").value = "";
+            document.getElementById("prodDesc").value = "";
+            document.getElementById("prodPrice").value = "";
+            document.getElementById("prodImg").value = "";
+          } else {
+            alert("Gagal menambahkan menu.");
+          }
+        } catch (e) {
+          alert("Error server.");
+        }
+      }
+
+      // Load Members Logic
+      async function loadMembers() {
+        const res = await fetch("/api/admin/members");
+        const data = await res.json();
+        const list = document.getElementById("memberList");
+        list.innerHTML = "";
+        if (data.length === 0) list.innerHTML = "<li>Belum ada member.</li>";
+
+        data.forEach((m) => {
+          list.innerHTML += `<li style="margin-bottom: 5px;">
+                    <b>${m.name}</b><br>
+                    <small>${m.email}</small><br>
+                    <span style="background: #eee; padding: 2px 5px; font-family: monospace;">${m.api_key}</span>
+                </li>`;
+        });
+      }
+    </script>
+  </body>
+</html>
