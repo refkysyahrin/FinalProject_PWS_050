@@ -2,56 +2,287 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Menu - Practice Coffee</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu & Order - Practice Coffee</title>
     <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* CSS KHUSUS MENU YANG RAPI */
+
+      /* 1. Kategori Tabs */
+      .category-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        padding: 10px 25px;
+        border-radius: 30px;
+        border: 2px solid var(--primary);
+        background: transparent;
+        color: var(--primary);
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .tab-btn.active,
+      .tab-btn:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      /* 2. Kartu Menu Rapi */
+      .menu-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Agar tinggi sama rata */
+        transition: transform 0.2s;
+      }
+      .menu-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .menu-img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #eee;
+      }
+
+      .menu-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Isi ruang kosong */
+      }
+
+      .menu-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: var(--primary);
+      }
+      .menu-desc {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 15px;
+        flex-grow: 1;
+        /* Potong teks jika kepanjangan */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .menu-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto; /* Dorong ke bawah */
+      }
+
+      .menu-price {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--accent);
+      }
+
+      .btn-add {
+        background: var(--primary);
+        color: white;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-add:hover {
+        background: var(--accent);
+      }
+
+      /* 3. Floating Cart (Keranjang Melayang) */
+      .floating-cart {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--accent);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 50px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        font-weight: bold;
+        display: none;
+        z-index: 1000;
+        animation: popUp 0.3s ease;
+      }
+      @keyframes popUp {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      /* 4. Modal Checkout */
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+    </style>
   </head>
   <body>
     <nav>
-      <div class="logo">Practice Menu</div>
-      <div class="nav-links"><a href="/">Kembali</a></div>
+      <div class="nav-content">
+        <a href="/" class="logo"> 📋 Practice Menu </a>
+
+        <div class="nav-links">
+          <a href="/" class="nav-link">← Kembali ke Home</a>
+        </div>
+      </div>
     </nav>
 
-    <div class="container" style="text-align: center; margin-top: 50px">
-      <div id="keySection">
-        <h2>🔒 Akses Menu Eksklusif</h2>
-        <p>Masukkan API Key Anda untuk melihat menu.</p>
-        <input
-          type="text"
-          id="apiKeyInput"
-          placeholder="Contoh: PC-MEMBER-XXXX"
-          style="width: 50%"
-        />
-        <br />
-        <button onclick="checkKey()" class="btn-main">Buka Menu</button>
-        <p style="margin-top: 20px">
-          Belum punya akses?
-          <a href="#" onclick="openModal()" style="color: var(--accent)"
-            >Daftar Member Gratis</a
-          >
-        </p>
+    <div class="container mt-5">
+      <div
+        id="gateSection"
+        style="max-width: 500px; margin: 80px auto; text-align: center"
+      >
+        <div class="card card-body" style="padding: 40px">
+          <h1>🔒 Member Access</h1>
+          <p class="text-muted">Masukkan API Key untuk memesan.</p>
+          <input
+            type="text"
+            id="apiKeyInput"
+            placeholder="Contoh: PC-XXXX-XXXX"
+            style="
+              text-align: center;
+              font-size: 1.2rem;
+              letter-spacing: 2px;
+              margin: 20px 0;
+            "
+          />
+          <button onclick="checkKey()" class="btn-main" style="width: 100%">
+            Mulai Pesan
+          </button>
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee" />
+          <p>
+            Belum punya?
+            <a
+              href="#"
+              onclick="openModal('regModal')"
+              style="color: var(--accent); font-weight: bold"
+              >Daftar Gratis</a
+            >
+          </p>
+        </div>
       </div>
 
-      <div id="menuSection" style="display: none">
-        <h2>Menu Hari Ini</h2>
-        <p>Halo, <span id="memberName" style="font-weight: bold"></span>!</p>
+      <div id="menuContent" style="display: none; padding-bottom: 100px">
+        <div class="text-center mb-3">
+          <h2>
+            Halo, <span id="userName" style="color: var(--primary)">User</span>
+          </h2>
+          <p>Silakan pilih kategori menu di bawah ini.</p>
+        </div>
+
+        <div class="category-tabs">
+          <button class="tab-btn active" onclick="filterMenu('all', this)">
+            Semua
+          </button>
+          <button class="tab-btn" onclick="filterMenu('coffee', this)">
+            ☕ Coffee
+          </button>
+          <button class="tab-btn" onclick="filterMenu('non-coffee', this)">
+            🥤 Non-Coffee
+          </button>
+          <button class="tab-btn" onclick="filterMenu('snack', this)">
+            🥐 Snack
+          </button>
+        </div>
+
         <div class="grid" id="menuGrid"></div>
+      </div>
+    </div>
+
+    <div id="cartFloat" class="floating-cart" onclick="openCart()">
+      🛒 <span id="cartCount">0</span> Item | Rp <span id="cartTotal">0</span>
+    </div>
+
+    <div id="cartModal" class="modal">
+      <div class="modal-content" style="text-align: left; max-width: 500px">
+        <h2 style="color: var(--primary); margin-bottom: 20px">
+          Keranjang Pesanan
+        </h2>
+
+        <div
+          id="cartItemsList"
+          style="max-height: 300px; overflow-y: auto; margin-bottom: 20px"
+        >
+          <p style="text-align: center; color: #999">Keranjang masih kosong.</p>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+          "
+        >
+          <span>Total:</span>
+          <span style="color: var(--accent)"
+            >Rp <span id="modalTotal">0</span></span
+          >
+        </div>
+
+        <button
+          onclick="checkout()"
+          class="btn-main"
+          style="width: 100%"
+          id="btnCheckout"
+        >
+          🚀 Kirim Pesanan
+        </button>
+        <button
+          onclick="closeModal('cartModal')"
+          class="btn-secondary"
+          style="width: 100%; margin-top: 10px; border: none"
+        >
+          Tutup / Belanja Lagi
+        </button>
       </div>
     </div>
 
     <div id="regModal" class="modal">
       <div class="modal-content">
-        <h3>Daftar Member</h3>
+        <h3>Daftar Member Baru</h3>
         <input type="text" id="regName" placeholder="Nama Lengkap" />
         <input type="email" id="regEmail" placeholder="Email" />
-        <button onclick="register()" class="btn-main">Dapatkan API Key</button>
         <button
-          onclick="closeModal()"
-          style="
-            background: none;
-            border: none;
-            margin-top: 10px;
-            cursor: pointer;
-          "
+          onclick="register()"
+          class="btn-main"
+          style="width: 100%; margin-top: 10px"
+        >
+          Dapatkan Key
+        </button>
+        <button
+          onclick="closeModal('regModal')"
+          class="btn-secondary"
+          style="border: none; margin-top: 10px"
         >
           Batal
         </button>
@@ -59,92 +290,232 @@
     </div>
 
     <script>
-      // --- LOGIKA UTAMA ---
+      // --- GLOBAL VARIABLES ---
+      let allProducts = []; // Simpan semua data produk
+      let cart = []; // Simpan data belanjaan {id, name, price, qty}
+      let currentMember = "";
+
+      // --- 1. AUTH & LOAD DATA ---
       async function checkKey() {
         const key = document.getElementById("apiKeyInput").value;
+        if (!key) return alert("Isi API Key dulu!");
 
         try {
           const res = await fetch(`/api/products?apikey=${key}`);
           const data = await res.json();
 
           if (data.success) {
-            // Sembunyikan Input Key, Tampilkan Menu
-            document.getElementById("keySection").style.display = "none";
-            document.getElementById("menuSection").style.display = "block";
-            document.getElementById("memberName").innerText = data.user;
+            currentMember = data.user;
+            allProducts = data.data; // Simpan ke global
 
-            // Render Menu ke dalam Grid
-            const grid = document.getElementById("menuGrid");
-            grid.innerHTML = "";
+            document.getElementById("gateSection").style.display = "none";
+            document.getElementById("menuContent").style.display = "block";
+            document.getElementById("userName").innerText = currentMember;
 
-            data.data.forEach((item) => {
-              // Logika Cek Gambar: Pakai gambar upload atau gambar default
-              const imgUrl = item.image_url
-                ? `/uploads/${item.image_url}`
-                : "https://via.placeholder.com/300x200?text=No+Image";
+            renderMenu(allProducts); // Tampilkan semua awal-awal
+          } else {
+            alert(data.error);
+          }
+        } catch (e) {
+          alert("Gagal koneksi");
+        }
+      }
 
-              grid.innerHTML += `
-                    <div class="card" style="overflow: hidden; padding: 0; text-align: left;">
-                        <img src="${imgUrl}" style="width: 100%; height: 200px; object-fit: cover;">
-                        
-                        <div style="padding: 15px;">
-                            <h3 style="margin: 0 0 10px 0;">${item.name}</h3>
-                            <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px; min-height: 40px;">
-                                ${item.description || "Tidak ada deskripsi."}
-                            </p>
-                            
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h4 style="color: var(--accent); margin: 0; font-size: 1.1rem;">Rp ${
+      // --- 2. RENDER MENU (DENGAN FILTER) ---
+      function renderMenu(products) {
+        const grid = document.getElementById("menuGrid");
+        grid.innerHTML = "";
+
+        if (products.length === 0) {
+          grid.innerHTML =
+            "<p style='grid-column: 1/-1; text-align:center;'>Menu kategori ini kosong.</p>";
+          return;
+        }
+
+        products.forEach((item) => {
+          const img = item.image_url
+            ? `/uploads/${item.image_url}`
+            : "https://via.placeholder.com/400x300?text=No+Image";
+
+          grid.innerHTML += `
+                    <div class="menu-card">
+                        <img src="${img}" class="menu-img">
+                        <div class="menu-body">
+                            <h3 class="menu-title">${item.name}</h3>
+                            <p class="menu-desc">${
+                              item.description || "Nikmat dan segar."
+                            }</p>
+                            <div class="menu-footer">
+                                <div class="menu-price">Rp ${parseInt(
                                   item.price
-                                }</h4>
-                                <span style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase;">
-                                    ${item.category || "Menu"}
-                                </span>
+                                ).toLocaleString("id-ID")}</div>
+                                <button class="btn-add" onclick="addToCart(${
+                                  item.id
+                                })">+</button>
                             </div>
                         </div>
                     </div>
                 `;
-            });
-          } else {
-            alert(data.error || "API Key Salah");
-          }
-        } catch (err) {
-          alert("Gagal mengambil data menu.");
+        });
+      }
+
+      function filterMenu(category, btn) {
+        // Ubah tombol aktif
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Filter Data
+        if (category === "all") {
+          renderMenu(allProducts);
+        } else {
+          const filtered = allProducts.filter((p) => p.category === category);
+          renderMenu(filtered);
         }
       }
 
-      // --- LOGIKA REGISTRASI ---
-      async function register() {
-        const name = document.getElementById("regName").value;
-        const email = document.getElementById("regEmail").value;
+      // --- 3. KERANJANG (CART) LOGIC ---
+      function addToCart(id) {
+        const product = allProducts.find((p) => p.id === id);
+        const existingItem = cart.find((i) => i.id === id);
+
+        if (existingItem) {
+          existingItem.qty++;
+        } else {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: parseInt(product.price),
+            qty: 1,
+          });
+        }
+        updateCartUI();
+      }
+
+      function updateCartUI() {
+        const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+        const totalPrice = cart.reduce(
+          (sum, item) => sum + item.price * item.qty,
+          0
+        );
+
+        // Update Floating Button
+        document.getElementById("cartCount").innerText = totalQty;
+        document.getElementById("cartTotal").innerText =
+          totalPrice.toLocaleString("id-ID");
+
+        if (totalQty > 0) {
+          document.getElementById("cartFloat").style.display = "block";
+        } else {
+          document.getElementById("cartFloat").style.display = "none";
+        }
+      }
+
+      function openCart() {
+        const list = document.getElementById("cartItemsList");
+        list.innerHTML = "";
+        let total = 0;
+
+        if (cart.length === 0) {
+          list.innerHTML =
+            "<p style='text-align:center;'>Keranjang kosong.</p>";
+          document.getElementById("btnCheckout").disabled = true;
+        } else {
+          document.getElementById("btnCheckout").disabled = false;
+          cart.forEach((item, index) => {
+            total += item.price * item.qty;
+            list.innerHTML += `
+                        <div class="cart-item">
+                            <div>
+                                <b>${item.name}</b><br>
+                                <small>Rp ${item.price.toLocaleString()} x ${
+              item.qty
+            }</small>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <b style="color:var(--accent)">Rp ${(
+                                  item.price * item.qty
+                                ).toLocaleString()}</b>
+                                <button onclick="removeFromCart(${index})" style="background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer; padding:2px 6px;">x</button>
+                            </div>
+                        </div>
+                    `;
+          });
+        }
+        document.getElementById("modalTotal").innerText =
+          total.toLocaleString("id-ID");
+        openModal("cartModal");
+      }
+
+      function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+        openCart(); // Refresh modal
+        if (cart.length === 0) closeModal("cartModal");
+      }
+
+      // --- 4. CHECKOUT ---
+      async function checkout() {
+        if (!confirm("Kirim pesanan sekarang? Anda tidak perlu antri lagi."))
+          return;
+
+        const total = cart.reduce(
+          (sum, item) => sum + item.price * item.qty,
+          0
+        );
+        const payload = {
+          customer_name: currentMember,
+          total_amount: total,
+          items: cart,
+        };
 
         try {
-          const res = await fetch("/api/register-member", {
+          const res = await fetch("/api/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email }),
+            body: JSON.stringify(payload),
           });
           const data = await res.json();
 
           if (data.success) {
             alert(
-              `Registrasi Berhasil! API Key Anda: ${data.apiKey}\n(Silakan Copy Key ini)`
+              `✅ Pesanan Berhasil! (ID: #${data.orderId})\nSilakan tunggu panggilan barista.`
             );
-            document.getElementById("apiKeyInput").value = data.apiKey;
-            closeModal();
+            cart = [];
+            updateCartUI();
+            closeModal("cartModal");
           } else {
-            alert("Gagal registrasi");
+            alert("Gagal mengirim pesanan.");
           }
-        } catch (err) {
-          alert("Error server saat registrasi.");
+        } catch (e) {
+          alert("Error server");
         }
       }
 
-      function openModal() {
-        document.getElementById("regModal").style.display = "flex";
+      // --- HELPERS ---
+      async function register() {
+        /* Sama seperti sebelumnya */
+        const name = document.getElementById("regName").value;
+        const email = document.getElementById("regEmail").value;
+        const res = await fetch("/api/register-member", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`API Key: ${data.apiKey}`);
+          document.getElementById("apiKeyInput").value = data.apiKey;
+          closeModal("regModal");
+        } else alert("Gagal Register");
       }
-      function closeModal() {
-        document.getElementById("regModal").style.display = "none";
+
+      function openModal(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+      function closeModal(id) {
+        document.getElementById(id).style.display = "none";
       }
     </script>
   </body>

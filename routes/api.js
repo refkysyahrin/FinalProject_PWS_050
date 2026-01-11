@@ -1,99 +1,251 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/database");
+const db = require("../config/database"); // Pastikan path ini benar
 const crypto = require("crypto");
-const multer = require("multer"); // Import Multer
+const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
-// --- KONFIGURASI UPLOAD FOTO ---
+// ==========================================
+// 1. KONFIGURASI UPLOAD GAMBAR (MULTER)
+// ==========================================
 const storage = multer.diskStorage({
-  destination: "./public/uploads/", // Simpan di folder public/uploads
-  filename: function (req, file, cb) {
-    // Format nama file: MENU-timestamp.jpg (agar unik)
-    cb(null, "MENU-" + Date.now() + path.extname(file.originalname));
+  destination: "./public/uploads/",
+  filename: (req, file, cb) => {
+    // Nama file unik: IMG-timestamp.jpg
+    cb(null, "IMG-" + Date.now() + path.extname(file.originalname));
   },
 });
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Batas file 5MB
-});
+const upload = multer({ storage: storage });
 
-// --- PUBLIC: REGISTER MEMBER ---
+// Fungsi Bantu: Hapus Gambar Lama saat Edit/Delete
+const deleteImage = (filename) => {
+  if (!filename) return;
+  const p = path.join(__dirname, "../public/uploads/", filename);
+  if (fs.existsSync(p)) fs.unlinkSync(p);
+};
+
+// ==========================================
+// 2. PUBLIC ROUTES (User / Member Area)
+// ==========================================
+
+// A. REGISTER MEMBER (Daftar Sendiri)
 router.post("/register-member", async (req, res) => {
   const { name, email } = req.body;
-  const randomStr = crypto.randomBytes(4).toString("hex").toUpperCase();
-  const newApiKey = `PC-${randomStr}`;
-
+  const apiKey = `PC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
   try {
     await db.query(
       "INSERT INTO members (name, email, api_key) VALUES (?, ?, ?)",
-      [name, email, newApiKey]
+      [name, email, apiKey]
     );
-    res.json({ success: true, apiKey: newApiKey });
+    res.json({ success: true, apiKey });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Gagal register." });
+    res
+      .status(500)
+      .json({ success: false, message: "Email mungkin sudah terdaftar." });
   }
 });
 
-// --- PUBLIC: LIHAT MENU ---
+// B. GET MENU (Wajib API Key)
 router.get("/products", async (req, res) => {
   const apiKey = req.query.apikey;
-
   if (!apiKey) return res.status(401).json({ error: "API Key Diperlukan!" });
 
-  const [member] = await db.query("SELECT * FROM members WHERE api_key = ?", [
-    apiKey,
-  ]);
-  if (member.length === 0)
-    return res.status(403).json({ error: "API Key Tidak Valid!" });
+  try {
+    const [member] = await db.query("SELECT * FROM members WHERE api_key = ?", [
+      apiKey,
+    ]);
+    if (member.length === 0)
+      return res.status(403).json({ error: "API Key Tidak Valid!" });
 
-  const [products] = await db.query("SELECT * FROM products ORDER BY id DESC");
-  res.json({ success: true, data: products, user: member[0].name });
+    const [products] = await db.query(
+      "SELECT * FROM products ORDER BY id DESC"
+    );
+    res.json({ success: true, data: products, user: member[0].name });
+  } catch (err) {
+    res.status(500).json({ error: "Server Error" });
+  }
 });
 
-// --- ADMIN: LOGIN ---
+// C. CHECKOUT PESANAN (Simpan ke Database)
+router.post("/orders", async (req, res) => {
+  const { customer_name, total_amount, items } = req.body;
+
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // 1. Simpan Header Pesanan
+    const [orderResult] = await connection.query(
+      "INSERT INTO orders (customer_name, total_amount) VALUES (?, ?)",
+      [customer_name, total_amount]
+    );
+    const orderId = orderResult.insertId;
+
+    // 2. Simpan Detail Item
+    for (const item of items) {
+      await connection.query(
+        "INSERT INTO order_items (order_id, product_name, price, quantity) VALUES (?, ?, ?, ?)",
+        [orderId, item.name, item.price, item.qty]
+      );
+    }
+
+    await connection.commit();
+    res.json({ success: true, orderId });
+  } catch (err) {
+    await connection.rollback();
+    console.error("Order Error:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Gagal memproses pesanan." });
+  } finally {
+    connection.release();
+  }
+});
+
+// ==========================================
+// 3. ADMIN ROUTES (Dashboard & CRUD)
+// ==========================================
+
+// A. LOGIN ADMIN
 router.post("/admin/login", async (req, res) => {
   const { email, password } = req.body;
-  const [users] = await db.query(
-    "SELECT * FROM users WHERE email = ? AND password = ?",
-    [email, password]
-  );
-  if (users.length > 0) res.json({ success: true });
-  else res.status(401).json({ success: false });
+  try {
+    const [u] = await db.query(
+      "SELECT * FROM users WHERE email=? AND password=?",
+      [email, password]
+    );
+    res.json({ success: u.length > 0 });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
 });
 
-// --- ADMIN: LIHAT MEMBER ---
-router.get("/admin/members", async (req, res) => {
-  const [members] = await db.query(
-    "SELECT * FROM members ORDER BY created_at DESC"
-  );
-  res.json(members);
+// B. KELOLA PRODUK (CRUD)
+// 1. Ambil Semua Produk
+router.get("/admin/products", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM products ORDER BY id DESC");
+    res.json(rows);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
-// --- ADMIN: TAMBAH MENU (DENGAN UPLOAD FOTO) ---
-// Perhatikan: upload.single('image') sesuai dengan name di form HTML
+// 2. Tambah Produk Baru (Upload Gambar)
 router.post("/admin/products", upload.single("image"), async (req, res) => {
   const { name, description, price, category } = req.body;
-
-  // Jika ada file, ambil nama filenya. Jika tidak, null.
-  const image_url = req.file ? req.file.filename : null;
-
+  const img = req.file ? req.file.filename : null;
   try {
     await db.query(
-      "INSERT INTO products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)",
-      [name, description, price, category, image_url]
+      "INSERT INTO products (name, description, price, category, image_url) VALUES (?,?,?,?,?)",
+      [name, description, price, category, img]
     );
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Gagal upload menu" });
+    res.status(500).json({ success: false });
   }
 });
 
-// --- ADMIN: HAPUS MENU ---
+// 3. Edit Produk (Update Gambar jika ada)
+router.put("/admin/products/:id", upload.single("image"), async (req, res) => {
+  const { name, description, price, category } = req.body;
+  const id = req.params.id;
+
+  try {
+    const [old] = await db.query("SELECT image_url FROM products WHERE id=?", [
+      id,
+    ]);
+    let img = old[0].image_url;
+
+    if (req.file) {
+      deleteImage(img); // Hapus gambar lama
+      img = req.file.filename; // Pakai gambar baru
+    }
+
+    await db.query(
+      "UPDATE products SET name=?, description=?, price=?, category=?, image_url=? WHERE id=?",
+      [name, description, price, category, img, id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// 4. Hapus Produk
 router.delete("/admin/products/:id", async (req, res) => {
-  await db.query("DELETE FROM products WHERE id = ?", [req.params.id]);
+  try {
+    const [d] = await db.query("SELECT image_url FROM products WHERE id=?", [
+      req.params.id,
+    ]);
+    if (d.length > 0) deleteImage(d[0].image_url);
+    await db.query("DELETE FROM products WHERE id=?", [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// C. KELOLA MEMBER
+router.get("/admin/members", async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM members ORDER BY id DESC");
+  res.json(rows);
+});
+
+router.post("/admin/members", async (req, res) => {
+  const { name, email } = req.body;
+  const apiKey = `PC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+  await db.query(
+    "INSERT INTO members (name, email, api_key) VALUES (?, ?, ?)",
+    [name, email, apiKey]
+  );
   res.json({ success: true });
+});
+
+router.delete("/admin/members/:id", async (req, res) => {
+  await db.query("DELETE FROM members WHERE id=?", [req.params.id]);
+  res.json({ success: true });
+});
+
+// D. KELOLA PESANAN (ORDERS) - Fitur Dashboard
+// 1. Ambil Semua Pesanan
+router.get("/admin/orders", async (req, res) => {
+  try {
+    const [orders] = await db.query(
+      "SELECT * FROM orders ORDER BY created_at DESC"
+    );
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: "DB Error" });
+  }
+});
+
+// 2. Ambil Detail Item Pesanan
+router.get("/admin/orders/:id/items", async (req, res) => {
+  try {
+    const [items] = await db.query(
+      "SELECT * FROM order_items WHERE order_id = ?",
+      [req.params.id]
+    );
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: "DB Error" });
+  }
+});
+
+// 3. Update Status Pesanan (Pending -> Completed)
+router.put("/admin/orders/:id", async (req, res) => {
+  const { status } = req.body;
+  try {
+    await db.query("UPDATE orders SET status = ? WHERE id = ?", [
+      status,
+      req.params.id,
+    ]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
 });
 
 module.exports = router;

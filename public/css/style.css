@@ -1,97 +1,532 @@
+/* =========================================
+   1. SETUP GLOBAL & VARIABEL
+   ========================================= */
 :root {
-  /* Palet Warna Practice Coffe (Estimasi) */
-  --primary: #2c3e50; /* Biru Gelap / Hitam Kopi */
-  --accent: #d4a373; /* Warna Cream/Kopi Susu */
-  --bg-light: #faf9f6; /* Putih Tulang */
-  --text-dark: #333;
-  --success: #27ae60;
+  /* Palet Warna Modern Coffee */
+  --primary: #2c3e50; /* Dark Blue/Charcoal - Warna Elegan */
+  --accent: #d4a373; /* Gold/Coffee Cream - Warna Mewah */
+  --bg-light: #f9fafb; /* Background sangat cerah */
+  --white: #ffffff;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+
+  /* Warna Status */
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: "Helvetica Neue", sans-serif;
-  margin: 0;
-  background: var(--bg-light);
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-light);
   color: var(--text-dark);
-}
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
+  line-height: 1.6;
+  min-height: 100vh;
 }
 
-/* Navbar */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: 0.2s;
+}
+ul {
+  list-style: none;
+}
+
+/* Container Utama */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* =========================================
+   2. NAVBAR MODERN (Sticky Glass)
+   ========================================= */
 nav {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+}
+
+.nav-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 80px;
   display: flex;
   justify-content: space-between;
-  padding: 20px 50px;
-  background: white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-.logo {
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: var(--primary);
-}
-.nav-links a {
-  margin-left: 20px;
-  text-decoration: none;
-  color: var(--text-dark);
-  font-weight: 500;
+  align-items: center;
 }
 
-/* Hero Section */
-.hero {
-  text-align: center;
-  padding: 80px 20px;
-  background: var(--primary);
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+/* Tombol Khusus Navbar (Pill Shape) */
+.btn-nav {
+  background-color: var(--primary);
   color: white;
+  padding: 10px 28px;
+  border-radius: 50px; /* Bulat Penuh */
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(44, 62, 80, 0.2);
 }
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 10px;
+
+.btn-nav:hover {
+  background-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 163, 115, 0.4);
 }
+
+/* =========================================
+   3. TOMBOL PROFESIONAL (UPDATE UTAMA)
+   ========================================= */
+/* Style Dasar Tombol - Diubah jadi Bulat (Pill) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 32px; /* Padding lebih lebar agar terlihat pro */
+  border-radius: 50px; /* Bentuk Pill / Bulat seperti gambar request */
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animasi halus */
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tombol Utama (Warna Emas/Accent) - Untuk CTA */
 .btn-main {
   background: var(--accent);
   color: white;
-  padding: 12px 30px;
-  border-radius: 30px;
-  text-decoration: none;
-  font-weight: bold;
-  display: inline-block;
-  margin-top: 20px;
+  box-shadow: 0 4px 15px rgba(212, 163, 115, 0.35); /* Bayangan berwarna */
 }
 .btn-main:hover {
-  opacity: 0.9;
+  background: #c5925e;
+  transform: translateY(-3px); /* Naik dikit saat hover */
+  box-shadow: 0 8px 25px rgba(212, 163, 115, 0.5);
+}
+.btn-main:active {
+  transform: translateY(-1px);
 }
 
-/* Sections */
-.section {
-  padding: 50px 20px;
-  text-align: center;
+/* Tombol Primary (Warna Biru Gelap) - Untuk Admin/Submit */
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
 }
+.btn-primary:hover {
+  background: #1a252f;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.5);
+}
+
+/* Tombol Secondary (Outline) - Tetap Bulat */
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 10px 30px; /* Kompensasi border */
+}
+.btn-secondary:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(212, 163, 115, 0.3);
+}
+
+/* Tombol Danger (Merah) - Tetap Bulat */
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Tombol Kecil (Table/Admin) - Tetap Bulat */
+.btn-sm {
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  border-radius: 50px;
+}
+
+/* Tombol Tambah Bulat (+) di Kartu Menu */
+.btn-add {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%; /* Bulat Sempurna */
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.btn-add:hover {
+  background: var(--accent);
+  transform: scale(1.1) rotate(90deg); /* Efek putar dikit */
+  box-shadow: 0 8px 15px rgba(212, 163, 115, 0.4);
+}
+
+/* =========================================
+   4. LAYOUT & KOMPONEN
+   ========================================= */
+/* Cards */
+.card {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 20px; /* Sudut lebih membulat */
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); /* Bayangan soft modern */
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  transition: transform 0.3s ease;
+}
+
+/* Grids */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
   margin-top: 30px;
 }
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+.mt-5 {
+  margin-top: 50px;
 }
 
-/* Forms & Modal */
+/* Forms */
 input,
 select,
 textarea {
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px; /* Input juga membulat */
+  font-family: inherit;
+  font-size: 1rem;
+  margin-bottom: 15px;
+  outline: none;
+  background: #f8fafc;
+  transition: 0.2s;
 }
+input:focus {
+  border-color: var(--accent);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(212, 163, 115, 0.1);
+}
+
+/* =========================================
+   5. HALAMAN LANDING (Index)
+   ========================================= */
+.hero {
+  background: linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.8)),
+    url("https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Parallax effect simple */
+  color: white;
+  padding: 140px 20px;
+  text-align: center;
+  border-radius: 0 0 50px 50px;
+  margin-bottom: 60px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 24px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.hero p {
+  font-size: 1.25rem;
+  max-width: 700px;
+  margin: 0 auto 40px;
+  opacity: 0.95;
+  font-weight: 300;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.review-card {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  border-left: 5px solid var(--accent);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+}
+
+/* =========================================
+   6. HALAMAN MENU
+   ========================================= */
+/* Tabs Kategori - Juga dibuat bulat */
+.category-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 12px 30px;
+  border-radius: 50px; /* Bulat */
+  border: 1px solid rgba(44, 62, 80, 0.1);
+  background: white;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+}
+
+/* Menu Card */
+.menu-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+.menu-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.menu-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.menu-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+.menu-desc {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 20px;
+  flex-grow: 1;
+  line-height: 1.5;
+}
+
+.menu-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.menu-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* Floating Cart */
+.floating-cart {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--primary);
+  color: white;
+  padding: 16px 32px;
+  border-radius: 50px;
+  box-shadow: 0 10px 30px rgba(44, 62, 80, 0.4);
+  cursor: pointer;
+  font-weight: 700;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  transition: 0.3s;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+.floating-cart:hover {
+  transform: scale(1.05);
+  background: #1a252f;
+}
+
+/* =========================================
+   7. HALAMAN ADMIN
+   ========================================= */
+.sidebar {
+  width: 260px;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.menu-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 16px;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  width: 100%;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.menu-btn:hover,
+.menu-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+.menu-btn.logout {
+  margin-top: auto;
+  color: #fca5a5;
+}
+
+.main-content {
+  margin-left: 260px;
+  padding: 40px;
+  width: calc(100% - 260px);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.stat-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+}
+.stat-val {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+th {
+  text-align: left;
+  color: #64748b;
+  font-size: 0.85rem;
+  padding: 20px;
+  background: #f8fafc;
+  text-transform: uppercase;
+  font-weight: 700;
+  border-bottom: 1px solid #e2e8f0;
+}
+td {
+  padding: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+/* =========================================
+   8. MODAL
+   ========================================= */
 .modal {
   display: none;
   position: fixed;
@@ -99,14 +534,40 @@ textarea {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(44, 62, 80, 0.6); /* Overlay gelap tapi biru dikit */
+  backdrop-filter: blur(8px);
   justify-content: center;
   align-items: center;
+  z-index: 3000;
 }
+
 .modal-content {
   background: white;
-  padding: 30px;
-  border-radius: 10px;
-  width: 400px;
+  padding: 40px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Footer */
+footer {
+  background: #1e293b;
+  color: #94a3b8;
   text-align: center;
+  padding: 60px 20px;
+  margin-top: 100px;
+  border-top: 1px solid #334155;
 }

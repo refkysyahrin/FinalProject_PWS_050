@@ -2,68 +2,161 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Practice Coffee</title>
+    <title>Practice Coffee - The Art of Brewing</title>
     <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Gaya khusus Landing Page */
+      .hero {
+        /* Foto background estetik gelap */
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+          url("https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 150px 20px;
+        text-align: center;
+      }
+      .story-section {
+        padding: 80px 20px;
+        background: white;
+        text-align: center;
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        margin-top: 40px;
+      }
+      .gallery img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: 0.3s;
+      }
+      .gallery img:hover {
+        transform: scale(1.02);
+      }
+      .review-card {
+        background: #f9f9f9;
+        padding: 25px;
+        border-radius: 10px;
+        border-left: 5px solid var(--accent);
+        text-align: left;
+        margin-bottom: 20px;
+      }
+    </style>
   </head>
   <body>
     <nav>
-      <div class="logo">Practice Coffee</div>
-      <div class="nav-links">
-        <a href="#about">Tentang</a>
-        <a href="#location">Lokasi</a>
-        <a href="/admin">Admin</a>
+      <div class="nav-content">
+        <a href="/" class="logo"> ☕ Practice Coffee </a>
+
+        <div class="nav-links">
+          <a href="#cerita" class="nav-link">Cerita Kami</a>
+          <a href="#lokasi" class="nav-link">Apa Kata Mereka?</a>
+          <a href="/menu" class="btn-nav">Lihat Menu</a>
+        </div>
       </div>
     </nav>
 
     <header class="hero">
-      <h1>Seni Kopi Sesungguhnya</h1>
-      <p>Tempat dimana rasa dan ketenangan bertemu.</p>
-      <a href="/menu" class="btn-main">Lihat Menu & Pesan</a>
+      <div class="container">
+        <h1 style="font-size: 3.5rem; margin-bottom: 20px; font-weight: 800">
+          Lebih Dari Sekadar Kopi
+        </h1>
+        <p
+          style="
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: #ddd;
+          "
+        >
+          "Practice makes perfect." Kami percaya setiap seduhan adalah proses
+          menuju kesempurnaan. Nikmati kopi berkualitas di ruang yang dirancang
+          untuk inspirasi Anda.
+        </p>
+        <a href="/menu" class="btn-main">Pesan Sekarang ➔</a>
+      </div>
     </header>
 
-    <section id="about" class="section">
-      <h2>Tentang Practice Coffee</h2>
-      <p>
-        Kami adalah coffee shop yang berdedikasi menyajikan biji kopi pilihan
-        dengan suasana yang nyaman untuk bekerja dan bersantai.
+    <section id="cerita" class="story-section container">
+      <h2 class="section-title">Filosofi Practice Coffee</h2>
+      <p
+        style="
+          max-width: 800px;
+          margin: auto;
+          color: #555;
+          font-size: 1.1rem;
+          line-height: 1.8;
+        "
+      >
+        Dimulai dari kecintaan pada detail, Practice Coffee hadir sebagai ruang
+        bagi penikmat kopi yang menghargai proses. Kami menyangrai biji kopi
+        pilihan (single origin) dan menyajikannya dengan teknik presisi. Tempat
+        kami bukan hanya kedai kopi, tapi ruang kolaborasi bagi kreator dan
+        pemimpi.
       </p>
-    </section>
 
-    <section id="location" class="section" style="background: #fff">
-      <h2>Lokasi Kami</h2>
-      <div class="grid">
-        <div class="card">
-          <img
-            src="https://via.placeholder.com/300x200?text=Interior+Cafe"
-            style="width: 100%; border-radius: 5px"
-          />
-          <h3>Indoor Area</h3>
-          <p>Nyaman, ber-AC, dan WiFi kencang.</p>
-        </div>
-        <div class="card">
-          <img
-            src="https://via.placeholder.com/300x200?text=Outdoor+Cafe"
-            style="width: 100%; border-radius: 5px"
-          />
-          <h3>Outdoor Area</h3>
-          <p>Sejuk untuk sore hari.</p>
-        </div>
+      <div class="gallery">
+        <img
+          src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=60"
+          alt="Interior Cafe"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=500&q=60"
+          alt="Barista Brewing"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=500&q=60"
+          alt="Coffee Latte"
+        />
       </div>
     </section>
 
-    <section class="section">
-      <h2>Apa Kata Mereka?</h2>
+    <section id="lokasi" class="container mt-5 mb-3">
+      <h2 class="section-title text-center">Apa Kata Mereka?</h2>
       <div class="grid">
-        <div class="card">"Kopinya enak, baristanya ramah!" - Andi</div>
-        <div class="card">"Tempat terbaik untuk WFC di kota ini." - Siti</div>
-        <div class="card">"Vibe-nya tenang banget." - Budi</div>
+        <div class="review-card">
+          <p style="font-style: italic">
+            "Tempat terbaik buat WFC! WiFi kencang, kopinya pas, dan baristanya
+            ramah banget. Vibe-nya tenang buat coding."
+          </p>
+          <br /><strong>— Dian, Freelancer</strong>
+        </div>
+        <div class="review-card">
+          <p style="font-style: italic">
+            "Suka banget sama konsep 'Member Exclusive' nya. Berasa punya
+            private coffee shop sendiri."
+          </p>
+          <br /><strong>— Raka, Mahasiswa</strong>
+        </div>
+        <div class="review-card">
+          <p style="font-style: italic">
+            "Kopi V60-nya juara. Wajib coba kalau mampir ke sini."
+          </p>
+          <br /><strong>— Bayu, Coffee Enthusiast</strong>
+        </div>
       </div>
     </section>
 
     <footer
-      style="text-align: center; padding: 20px; background: #333; color: white"
+      style="
+        background: #222;
+        color: #aaa;
+        text-align: center;
+        padding: 40px;
+        margin-top: 50px;
+      "
     >
-      &copy; 2026 Practice Coffee
+      <p>&copy; 2026 Practice Coffee. All rights reserved.</p>
+      <p style="font-size: 0.8rem; margin-top: 10px">
+        <a href="/admin" style="color: #444; text-decoration: none"
+          >Staff Login</a
+        >
+      </p>
     </footer>
   </body>
 </html>

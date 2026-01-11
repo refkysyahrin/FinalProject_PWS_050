@@ -2,161 +2,681 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <title>Admin Dashboard - Practice Coffee</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2c3e50;
+        --accent: #d4a373;
+        --bg: #f3f4f6;
+        --white: #ffffff;
+        --text: #1f2937;
+        --danger: #ef4444;
+        --success: #10b981;
+        --warning: #f59e0b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        height: 100vh;
+        display: flex;
+        overflow: hidden;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 260px;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        transition: 0.3s;
+      }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 40px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .menu-btn {
+        background: transparent;
+        border: none;
+        color: #cbd5e1;
+        padding: 15px;
+        text-align: left;
+        font-size: 1rem;
+        cursor: pointer;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: 0.2s;
+        font-weight: 600;
+      }
+      .menu-btn:hover,
+      .menu-btn.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+      .menu-btn.logout {
+        margin-top: auto;
+        color: #fca5a5;
+      }
+      .menu-btn.logout:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      /* MAIN CONTENT */
+      .main-content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+      .header h2 {
+        font-size: 1.8rem;
+      }
+
+      /* STATS CARDS */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+      .stat-val {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+      .stat-label {
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      /* TABLES & FORMS */
+      .card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #f9fafb;
+        outline: none;
+        margin-bottom: 10px;
+      }
+      input:focus {
+        border-color: var(--accent);
+        background: white;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        color: white;
+        transition: 0.2s;
+      }
+      .btn-primary {
+        background: var(--primary);
+      }
+      .btn-accent {
+        background: var(--accent);
+      }
+      .btn-danger {
+        background: var(--danger);
+      }
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      th {
+        text-align: left;
+        color: #6b7280;
+        font-size: 0.85rem;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+      }
+      td {
+        padding: 15px;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.95rem;
+      }
+      .badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+      .bg-pending {
+        background: #fef3c7;
+        color: #d97706;
+      }
+      .bg-completed {
+        background: #d1fae5;
+        color: #059669;
+      }
+
+      /* MODAL */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        width: 400px;
+        max-width: 90%;
+      }
+      .order-item-list {
+        margin: 20px 0;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #f9fafb;
+        padding: 10px;
+        border-radius: 8px;
+      }
+      .item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        border-bottom: 1px dashed #ddd;
+        padding-bottom: 5px;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <h1>🔧 Admin Dashboard</h1>
-
+    <div
+      id="loginScreen"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--primary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      "
+    >
       <div
-        id="loginForm"
-        style="max-width: 400px; margin: auto; text-align: center"
+        style="
+          background: white;
+          padding: 40px;
+          border-radius: 12px;
+          width: 350px;
+          text-align: center;
+        "
       >
-        <div class="card">
-          <h3>Login Admin</h3>
-          <input type="email" id="admEmail" placeholder="Email Admin" />
-          <input type="password" id="admPass" placeholder="Password" />
-          <button onclick="adminLogin()" class="btn-main">Masuk</button>
-        </div>
+        <h2 style="margin-bottom: 20px; color: var(--primary)">
+          ☕ Admin Login
+        </h2>
+        <input type="email" id="admEmail" placeholder="admin@practice.com" />
+        <input type="password" id="admPass" placeholder="Password" />
+        <button onclick="login()" class="btn btn-accent" style="width: 100%">
+          Masuk Dashboard
+        </button>
+      </div>
+    </div>
+
+    <div id="dashboardScreen" style="display: none; width: 100%">
+      <div class="sidebar">
+        <div class="logo">☕ Practice Admin</div>
+        <button class="menu-btn active" onclick="switchTab('orders', this)">
+          📋 Pesanan Masuk
+        </button>
+        <button class="menu-btn" onclick="switchTab('products', this)">
+          📦 Kelola Menu
+        </button>
+        <button class="menu-btn" onclick="switchTab('members', this)">
+          👥 Kelola Member
+        </button>
+        <button class="menu-btn logout" onclick="location.reload()">
+          Log Out
+        </button>
       </div>
 
-      <div id="dashboard" style="display: none">
-        <div class="grid">
+      <div class="main-content">
+        <div class="header">
+          <h2 id="pageTitle">Pesanan Masuk</h2>
+          <span style="color: #6b7280; font-size: 0.9rem"
+            >Admin: Super User</span
+          >
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="statOrders">0</div>
+            <div class="stat-label">Pesanan Hari Ini</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statProducts">0</div>
+            <div class="stat-label">Total Menu Aktif</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statMembers">0</div>
+            <div class="stat-label">Member Terdaftar</div>
+          </div>
+        </div>
+
+        <div id="view-orders" class="view-section">
           <div class="card">
-            <h3>☕ Tambah Menu Baru</h3>
-            <input type="text" id="prodName" placeholder="Nama Menu" />
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h3>Daftar Transaksi</h3>
+              <button onclick="loadOrders()" class="btn btn-sm btn-primary">
+                Refresh Data
+              </button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Pelanggan</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Waktu</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="orderTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="view-products" class="view-section" style="display: none">
+          <div class="card" style="margin-bottom: 30px">
+            <h3>Tambah / Edit Menu</h3>
+            <input type="hidden" id="prodId" />
+            <div class="form-grid">
+              <input type="text" id="prodName" placeholder="Nama Menu" />
+              <input type="number" id="prodPrice" placeholder="Harga (Rp)" />
+            </div>
             <input type="text" id="prodDesc" placeholder="Deskripsi Singkat" />
-            <input type="number" id="prodPrice" placeholder="Harga (Rp)" />
-
-            <label style="font-size: 0.9rem; font-weight: bold"
-              >Kategori:</label
+            <div class="form-grid">
+              <select id="prodCat">
+                <option value="coffee">Coffee</option>
+                <option value="non-coffee">Non-Coffee</option>
+                <option value="snack">Snack</option>
+              </select>
+              <input type="file" id="prodImg" />
+            </div>
+            <button onclick="saveProduct()" class="btn btn-accent">
+              Simpan Menu
+            </button>
+            <button
+              onclick="resetForm()"
+              class="btn"
+              style="background: #ddd; color: #333"
             >
-            <select id="prodCat">
-              <option value="coffee">Coffee</option>
-              <option value="non-coffee">Non-Coffee</option>
-              <option value="snack">Snack</option>
-            </select>
-
-            <label style="font-size: 0.9rem; font-weight: bold"
-              >Foto Menu:</label
-            >
-            <input type="file" id="prodImg" accept="image/*" />
-
-            <button onclick="addProd()" class="btn-main" style="width: 100%">
-              Upload & Simpan
+              Reset
             </button>
           </div>
 
           <div class="card">
-            <h3>👥 Member Terdaftar</h3>
-            <ul
-              id="memberList"
-              style="text-align: left; padding-left: 20px"
-            ></ul>
-            <button
-              onclick="loadMembers()"
-              style="
-                margin-top: 10px;
-                background: #ddd;
-                border: none;
-                padding: 5px 10px;
-                cursor: pointer;
-              "
-            >
-              Refresh List
-            </button>
+            <h3>List Menu</h3>
+            <div id="productList"></div>
+          </div>
+        </div>
+
+        <div id="view-members" class="view-section" style="display: none">
+          <div class="card">
+            <h3>Daftar Member API Key</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px">
+              <input
+                type="text"
+                id="memName"
+                placeholder="Nama"
+                style="margin: 0"
+              />
+              <input
+                type="email"
+                id="memEmail"
+                placeholder="Email"
+                style="margin: 0"
+              />
+              <button onclick="addMember()" class="btn btn-accent">
+                Tambah Manual
+              </button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>API Key</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="memberTable"></tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
 
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <h3 style="margin-bottom: 15px">
+          Detail Pesanan #<span id="modalOrderId"></span>
+        </h3>
+        <p><strong>Pelanggan:</strong> <span id="modalCustomer"></span></p>
+
+        <div class="order-item-list" id="modalItems"></div>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+          "
+        >
+          <button
+            onclick="updateOrderStatus('completed')"
+            class="btn btn-success"
+            style="background: var(--success)"
+          >
+            ✅ Selesaikan Pesanan
+          </button>
+          <button
+            onclick="document.getElementById('orderModal').style.display='none'"
+            class="btn"
+            style="background: #ddd; color: #333"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script>
-      // Login Logic
-      async function adminLogin() {
+      // --- AUTH & SETUP ---
+      async function login() {
         const email = document.getElementById("admEmail").value;
         const password = document.getElementById("admPass").value;
+        const res = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        if ((await res.json()).success) {
+          document.getElementById("loginScreen").style.display = "none";
+          document.getElementById("dashboardScreen").style.display = "flex";
+          initDashboard();
+        } else alert("Login Gagal");
+      }
 
-        try {
-          const res = await fetch("/api/admin/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+      function initDashboard() {
+        loadOrders();
+        loadProducts();
+        loadMembers();
+      }
+
+      function switchTab(tabName, btn) {
+        document
+          .querySelectorAll(".view-section")
+          .forEach((el) => (el.style.display = "none"));
+        document.getElementById("view-" + tabName).style.display = "block";
+
+        document
+          .querySelectorAll(".menu-btn")
+          .forEach((el) => el.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+
+        const titles = {
+          orders: "Pesanan Masuk",
+          products: "Kelola Menu",
+          members: "Kelola Member",
+        };
+        document.getElementById("pageTitle").innerText = titles[tabName];
+      }
+
+      // --- 1. LOGIC ORDERS ---
+      let currentOrderId = null;
+
+      async function loadOrders() {
+        const res = await fetch("/api/admin/orders");
+        const data = await res.json();
+        document.getElementById("statOrders").innerText = data.length;
+
+        const tbody = document.getElementById("orderTable");
+        tbody.innerHTML = "";
+
+        data.forEach((o) => {
+          const date = new Date(o.created_at).toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
           });
-          const data = await res.json();
+          const badgeClass =
+            o.status === "completed" ? "bg-completed" : "bg-pending";
+          const statusText = o.status === "completed" ? "Selesai" : "Pending";
 
-          if (data.success) {
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("dashboard").style.display = "block";
-            loadMembers();
-          } else {
-            alert("Login Gagal! Cek email/password.");
-          }
-        } catch (e) {
-          alert("Error koneksi");
+          tbody.innerHTML += `
+                    <tr>
+                        <td>#${o.id}</td>
+                        <td><b>${o.customer_name}</b></td>
+                        <td>Rp ${parseInt(o.total_amount).toLocaleString()}</td>
+                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td>${date}</td>
+                        <td>
+                            <button onclick="showOrderDetails(${o.id}, '${
+            o.customer_name
+          }')" class="btn btn-sm btn-primary">Lihat Detail</button>
+                        </td>
+                    </tr>
+                `;
+        });
+      }
+
+      async function showOrderDetails(id, customer) {
+        currentOrderId = id;
+        document.getElementById("modalOrderId").innerText = id;
+        document.getElementById("modalCustomer").innerText = customer;
+
+        const res = await fetch(`/api/admin/orders/${id}/items`);
+        const items = await res.json();
+
+        const list = document.getElementById("modalItems");
+        list.innerHTML = "";
+        items.forEach((i) => {
+          list.innerHTML += `
+                    <div class="item-row">
+                        <span>${i.product_name} x${i.quantity}</span>
+                        <span>Rp ${(
+                          i.price * i.quantity
+                        ).toLocaleString()}</span>
+                    </div>
+                `;
+        });
+        document.getElementById("orderModal").style.display = "flex";
+      }
+
+      async function updateOrderStatus(status) {
+        if (!confirm("Tandai pesanan ini sebagai selesai?")) return;
+        await fetch(`/api/admin/orders/${currentOrderId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        });
+        document.getElementById("orderModal").style.display = "none";
+        loadOrders();
+      }
+
+      // --- 2. LOGIC PRODUCTS ---
+      async function loadProducts() {
+        const res = await fetch("/api/admin/products");
+        const data = await res.json();
+        document.getElementById("statProducts").innerText = data.length;
+
+        const div = document.getElementById("productList");
+        div.innerHTML = "";
+        data.forEach((p) => {
+          div.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:10px 0;">
+                        <div>
+                            <b>${
+                              p.name
+                            }</b> <small class="badge bg-pending" style="color:#555; background:#eee;">${
+            p.category
+          }</small><br>
+                            Rp ${parseInt(p.price).toLocaleString()}
+                        </div>
+                        <div>
+                            <button onclick='editProd(${JSON.stringify(
+                              p
+                            )})' class="btn btn-sm btn-accent">Edit</button>
+                            <button onclick="delProd(${
+                              p.id
+                            })" class="btn btn-sm btn-danger">Hapus</button>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      async function saveProduct() {
+        const id = document.getElementById("prodId").value;
+        const fd = new FormData();
+        fd.append("name", document.getElementById("prodName").value);
+        fd.append("price", document.getElementById("prodPrice").value);
+        fd.append("description", document.getElementById("prodDesc").value);
+        fd.append("category", document.getElementById("prodCat").value);
+        if (document.getElementById("prodImg").files[0])
+          fd.append("image", document.getElementById("prodImg").files[0]);
+
+        const url = id ? `/api/admin/products/${id}` : "/api/admin/products";
+        const method = id ? "PUT" : "POST";
+
+        await fetch(url, { method, body: fd });
+        resetForm();
+        loadProducts();
+      }
+
+      function editProd(p) {
+        document.getElementById("prodId").value = p.id;
+        document.getElementById("prodName").value = p.name;
+        document.getElementById("prodPrice").value = p.price;
+        document.getElementById("prodDesc").value = p.description;
+        document.getElementById("prodCat").value = p.category;
+        switchTab("products");
+      }
+
+      async function delProd(id) {
+        if (confirm("Hapus menu ini?")) {
+          await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+          loadProducts();
         }
       }
 
-      // Add Product Logic (Pakai FormData untuk File)
-      async function addProd() {
-        const name = document.getElementById("prodName").value;
-        const price = document.getElementById("prodPrice").value;
-        const fileInput = document.getElementById("prodImg");
-
-        if (!name || !price) return alert("Nama dan Harga wajib diisi!");
-
-        // Buat FormData object
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append(
-          "description",
-          document.getElementById("prodDesc").value
-        );
-        formData.append("price", price);
-        formData.append("category", document.getElementById("prodCat").value);
-
-        // Masukkan file jika ada
-        if (fileInput.files[0]) {
-          formData.append("image", fileInput.files[0]);
-        }
-
-        try {
-          const res = await fetch("/api/admin/products", {
-            method: "POST",
-            body: formData, // JANGAN set Content-Type header manual
-          });
-
-          const data = await res.json();
-          if (data.success) {
-            alert("Menu Berhasil Ditambahkan!");
-            // Reset Form
-            document.getElementById("prodName").value = "";
-            document.getElementById("prodDesc").value = "";
-            document.getElementById("prodPrice").value = "";
-            document.getElementById("prodImg").value = "";
-          } else {
-            alert("Gagal menambahkan menu.");
-          }
-        } catch (e) {
-          alert("Error server.");
-        }
+      function resetForm() {
+        document.getElementById("prodId").value = "";
+        document.getElementById("prodName").value = "";
+        document.getElementById("prodPrice").value = "";
+        document.getElementById("prodDesc").value = "";
+        document.getElementById("prodImg").value = "";
       }
 
-      // Load Members Logic
+      // --- 3. LOGIC MEMBERS ---
       async function loadMembers() {
         const res = await fetch("/api/admin/members");
         const data = await res.json();
-        const list = document.getElementById("memberList");
-        list.innerHTML = "";
-        if (data.length === 0) list.innerHTML = "<li>Belum ada member.</li>";
+        document.getElementById("statMembers").innerText = data.length;
 
+        const tbody = document.getElementById("memberTable");
+        tbody.innerHTML = "";
         data.forEach((m) => {
-          list.innerHTML += `<li style="margin-bottom: 5px;">
-                    <b>${m.name}</b><br>
-                    <small>${m.email}</small><br>
-                    <span style="background: #eee; padding: 2px 5px; font-family: monospace;">${m.api_key}</span>
-                </li>`;
+          tbody.innerHTML += `
+                    <tr>
+                        <td>${m.name}</td>
+                        <td>${m.email}</td>
+                        <td><code style="background:#eee; padding:2px 5px;">${m.api_key}</code></td>
+                        <td><button onclick="delMember(${m.id})" class="btn btn-sm btn-danger">Hapus</button></td>
+                    </tr>
+                `;
         });
+      }
+
+      async function addMember() {
+        const name = document.getElementById("memName").value;
+        const email = document.getElementById("memEmail").value;
+        await fetch("/api/admin/members", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email }),
+        });
+        document.getElementById("memName").value = "";
+        document.getElementById("memEmail").value = "";
+        loadMembers();
+      }
+
+      async function delMember(id) {
+        if (confirm("Hapus member ini?")) {
+          await fetch(`/api/admin/members/${id}`, { method: "DELETE" });
+          loadMembers();
+        }
       }
     </script>
   </body>
